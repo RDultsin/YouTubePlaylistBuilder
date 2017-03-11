@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Threading.Tasks;
 using Google.Apis.Services;
 using Google.Apis.YouTube.v3;
+using System.Configuration;
 
 namespace YouTubePlaylistBuilder
 {
@@ -13,7 +14,7 @@ namespace YouTubePlaylistBuilder
         const string RussianChartArchiveLink = "/charts/results/6/";
         const string RnbChartArchiveLink = "/charts/results/14/";
 
-        private const string YouTubeApiKey = "YOUR_API_KEY";
+        private const string YouTubeApiKeyConfigKey = "YouTubeApiKey";
 
         [STAThread]
         static void Main()
@@ -46,10 +47,21 @@ namespace YouTubePlaylistBuilder
         {
             string videoId = null;
 
-            // Create the service.
+            string youTubeApiKey = null;
+            try
+            {
+                youTubeApiKey = ConfigurationManager.AppSettings[YouTubeApiKeyConfigKey];
+            }
+            catch (ConfigurationErrorsException e)
+            {
+                Console.WriteLine("Error: " + e.Message);
+                return null;
+            }
+
+            // Create the service
             var youTubeService = new YouTubeService(new BaseClientService.Initializer
             {
-                ApiKey = YouTubeApiKey,
+                ApiKey = youTubeApiKey,
                 ApplicationName = GetType().ToString(),
             });
 

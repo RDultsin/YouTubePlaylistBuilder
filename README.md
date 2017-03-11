@@ -2,7 +2,7 @@
 Application to scrape online music charts and build YouTube playlist out of them
 
 ## Purpose
-Because someone wants to be able to play their favorite music charts anytime knowing their respective YouTube playlist is always up-to-date
+Because someone wants to be able to play their favorite music charts anytime knowing their respective YouTube playlist is always up-to-date (check out the two sample playlists [here](https://www.youtube.com/channel/UCIjhNqtW_oWr2ZGSdxJunxA/playlists))
 
 ## Implementation
 The .NET console application coded in C#, but could be easily implemented in Python/Perl/etc.  I picked C# because someone asked me for that language specifically (and given that I haven't coded in C# for a couple of years this small project would be a good refresher).

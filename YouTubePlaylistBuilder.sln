@@ -3,7 +3,7 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder.App", "YouTubePlaylistBuilder\YouTubePlaylistBuilder.App.csproj", "{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder.App", "YouTubePlaylistBuilder.App\YouTubePlaylistBuilder.App.csproj", "{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder.Data", "YouTubePlaylistBuilder.Data\YouTubePlaylistBuilder.Data.csproj", "{DBCE59E0-657A-4826-B224-02FF48741287}"
 EndProject

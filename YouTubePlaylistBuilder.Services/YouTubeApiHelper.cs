@@ -9,10 +9,11 @@ using System.Diagnostics;
 using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
+using YouTubePlaylistBuilder.Data;
 
-namespace YouTubePlaylistBuilder
+namespace YouTubePlaylistBuilder.Services
 {
-    class YouTubeApiHelper
+    public class YouTubeApiHelper
     {
         private const string YouTubeApiKeyConfigKey = "YouTubeApiKey";
 
@@ -144,12 +145,9 @@ namespace YouTubePlaylistBuilder
                 PlaylistItemListResponse playlistItemResp = await playlistItemReq.ExecuteAsync();
                 foreach (PlaylistItem playlistItem in playlistItemResp.Items)
                 {
-                    if (playlistItem.Snippet.PlaylistId == playlist.Id)
-                    {
-                        await youTubeService.PlaylistItems.Delete(playlistItem.Id).ExecuteAsync();
+                    await youTubeService.PlaylistItems.Delete(playlistItem.Id).ExecuteAsync();
 
-                        Debug.WriteLine("Removed playlist item {0} from playlist {1}", playlistItem.Snippet.Title, playlist.Snippet.Title);
-                    }
+                    Debug.WriteLine("Removed playlist item {0} from playlist {1}", playlistItem.Snippet.Title, playlist.Snippet.Title);
                 }
             }
 

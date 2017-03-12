@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 
-namespace YouTubePlaylistBuilder
+namespace YouTubePlaylistBuilder.Data
 {
-    class Chart
+    public class Chart
     {
         public string Name { get; set; }
         public string ReleaseFromDate { get; set; }

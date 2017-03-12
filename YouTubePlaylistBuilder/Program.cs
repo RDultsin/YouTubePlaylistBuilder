@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Threading.Tasks;
+using YouTubePlaylistBuilder.Data;
+using YouTubePlaylistBuilder.Services;
 
-namespace YouTubePlaylistBuilder
+namespace YouTubePlaylistBuilder.App
 {
     class Program
     {

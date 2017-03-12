@@ -1,10 +1,11 @@
 ﻿using HtmlAgilityPack;
 using System.Collections.Generic;
 using System.Diagnostics;
+using YouTubePlaylistBuilder.Data;
 
-namespace YouTubePlaylistBuilder
+namespace YouTubePlaylistBuilder.Services
 {
-    class ChartScraper
+    public class ChartScraper
     {
         private readonly HtmlWeb _htmlWeb = new HtmlWeb();
 

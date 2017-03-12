@@ -3,7 +3,11 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 15
 VisualStudioVersion = 15.0.26228.4
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder", "YouTubePlaylistBuilder\YouTubePlaylistBuilder.csproj", "{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder.App", "YouTubePlaylistBuilder\YouTubePlaylistBuilder.App.csproj", "{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder.Data", "YouTubePlaylistBuilder.Data\YouTubePlaylistBuilder.Data.csproj", "{DBCE59E0-657A-4826-B224-02FF48741287}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "YouTubePlaylistBuilder.Services", "YouTubePlaylistBuilder.Services\YouTubePlaylistBuilder.Services.csproj", "{CA109E60-D76C-4133-9D5C-9375A154D441}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{8BEC163D-1808-4B9E-84B8-470D69ED2CD1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{DBCE59E0-657A-4826-B224-02FF48741287}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{DBCE59E0-657A-4826-B224-02FF48741287}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{DBCE59E0-657A-4826-B224-02FF48741287}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{DBCE59E0-657A-4826-B224-02FF48741287}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CA109E60-D76C-4133-9D5C-9375A154D441}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CA109E60-D76C-4133-9D5C-9375A154D441}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CA109E60-D76C-4133-9D5C-9375A154D441}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CA109E60-D76C-4133-9D5C-9375A154D441}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

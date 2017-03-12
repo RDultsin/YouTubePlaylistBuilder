@@ -14,16 +14,16 @@ The high-level design of the application consists of three parts:
 3. Creating or updating corresponding YouTube playlist with latest videos
 
 ### Scraping Web Page
-Html Agility Pack (HAP) is the most predominant NuGet package used by .NET applications for web page scraping.  YouTubePlaylistBuilder uses HAP for two purposes in [ChartScraper.cs](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder/ChartScraper.cs):
+Html Agility Pack (HAP) is the most predominant NuGet package used by .NET applications for web page scraping.  YouTubePlaylistBuilder uses HAP for two purposes in [ChartScraper.cs](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder.Services/ChartScraper.cs):
 
 1. Given chart archive page to determine latest chart page
 2. Given latest chart page to determine artist and titles of chart's songs
 
 ### Looking Up YouTube Videos
-Keyword searching for YouTube videos is implemented in [YouTubeApiHelper.cs](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder/YouTubeApiHelper.cs) and uses Simple API access (API Leys): [link](https://developers.google.com/api-client-library/dotnet/guide/aaa_apikeys).  Once acquired you need to save your YouTube API key in [App.config](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder/App.config) file.
+Keyword searching for YouTube videos is implemented in [YouTubeApiHelper.cs](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder.Services/YouTubeApiHelper.cs) and uses Simple API access (API Leys): [link](https://developers.google.com/api-client-library/dotnet/guide/aaa_apikeys).  Once acquired you need to save your YouTube API key in [App.config](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder.App/App.config) file.
 
 ### Creating / Updating YouTube Playlists
-Creation and updates to YouTube playlists details and playlist items is also implemented in [YouTubeApiHelper.cs](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder/YouTubeApiHelper.cs), but uses Authorized API access (OAuth 2.0): [link](https://developers.google.com/api-client-library/dotnet/guide/aaa_oauth).  Once acquired you need to save your client secrets in [client_secrets.json](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder/client_secrets.json) file.
+Creation and updates to YouTube playlists details and playlist items is also implemented in [YouTubeApiHelper.cs](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder.Services/YouTubeApiHelper.cs), but uses Authorized API access (OAuth 2.0): [link](https://developers.google.com/api-client-library/dotnet/guide/aaa_oauth).  Once acquired you need to save your client secrets in [client_secrets.json](https://github.com/RDultsin/YouTubePlaylistBuilder/blob/master/YouTubePlaylistBuilder.App/client_secrets.json) file.
 
 ## Tools
 * Visual Studio 2017 Community Edition: https://www.visualstudio.com/

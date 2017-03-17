@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 using YouTubePlaylistBuilder.Data;
 using YouTubePlaylistBuilder.Services;
@@ -9,17 +10,24 @@ namespace YouTubePlaylistBuilder.App
     {
         const string MuzTvRuDomain = "http://muz-tv.ru";
 
-        const string RussianChartArchiveLink = "/charts/results/6/";
-        const string RnbChartArchiveLink = "/charts/results/14/";
+        private static readonly List<string> ChartArchiveLinks = new List<string>()
+        {
+            "/charts/results/5/", // МУЗ-ТВ Чарт
+            "/charts/results/6/", // Русский Чарт
+            "/charts/results/13/", // ClipYou Чарт
+            "/charts/results/14/", // R'n'B Чарт
+            "/charts/results/15/", // ТОП 30. Крутяк недели
+            "/charts/results/16/" // Русский крутяк недели
+        };
 
         [STAThread]
         static void Main()
         {
-            // Russian chart
-            Chart russianChart = new Program().ScrapeChartAndBuildYouTubePlaylist(RussianChartArchiveLink).Result;
-
-            // RnB chart
-            Chart rnbChart = new Program().ScrapeChartAndBuildYouTubePlaylist(RnbChartArchiveLink).Result;
+            Chart chart;
+            foreach (string chartArchiveLink in ChartArchiveLinks)
+            {
+                chart = new Program().ScrapeChartAndBuildYouTubePlaylist(chartArchiveLink).Result;
+            }
          }
 
         private async Task<Chart> ScrapeChartAndBuildYouTubePlaylist(string chartArchiveLink)

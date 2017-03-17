@@ -31,5 +31,8 @@ Creation and updates to YouTube playlists details and playlist items is also imp
 * Html Agility Pack: http://htmlagilitypack.codeplex.com/
 * YouTube Data API v3: https://developers.google.com/youtube/v3/
 
-## What's Next
-Given time I'd like to move this console app to run as a job in the cloud
+## Deployment and Scheduling
+Make the application run on regular intervals as a background job by setting up a Cron job or setting up a task in Task Scheduler (depending on your platform)
+
+## Issues
+Due to [the limitation of service accounts and YouTube API](https://developers.google.com/youtube/v3/guides/moving_to_oauth#service_accounts), the parts of application manipulating playlists couldn't run in the cloud

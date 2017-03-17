@@ -16,13 +16,15 @@ namespace YouTubePlaylistBuilder.Services
     public class YouTubeApiHelper
     {
         private const string YouTubeApiKeyConfigKey = "YouTubeApiKey";
+        private const string SongsJsonFileConfigKey = "SongsJsonFile";
 
         public async Task<Chart> GetYouTubeVideoIds(Chart chart)
         {
-            string youTubeApiKey;
+            string youTubeApiKey, songsJsonFile;
             try
             {
                 youTubeApiKey = ConfigurationManager.AppSettings[YouTubeApiKeyConfigKey];
+                songsJsonFile = ConfigurationManager.AppSettings[SongsJsonFileConfigKey];
             }
             catch (ConfigurationErrorsException e)
             {
@@ -30,32 +32,51 @@ namespace YouTubePlaylistBuilder.Services
                 return null;
             }
 
-            // Create the service
+            // Create the YouTube service
             var youTubeService = new YouTubeService(new BaseClientService.Initializer
             {
                 ApiKey = youTubeApiKey,
                 ApplicationName = GetType().ToString(),
             });
 
+            // Load songs cache
+            SongCache songCache = new SongCache(songsJsonFile);
+
             foreach (Song song in chart.Songs)
             {
-                var searchListRequest = youTubeService.Search.List("snippet");
-                searchListRequest.Q = song.Keyword;
-                searchListRequest.MaxResults = 10;
-
-                // Call the search.list method to retrieve results matching the specified query term
-                var searchListResponse = await searchListRequest.ExecuteAsync();
-
-                foreach (var searchResult in searchListResponse.Items)
+                // Attempt to retrive song from the cache first
+                Song cachedSong;
+                if (songCache.TryGetValue(song.Keyword, out cachedSong))
                 {
-                    if (searchResult.Id.Kind == "youtube#video")
+                    song.VideoId = cachedSong.VideoId;
+                    Debug.WriteLine("Using songs cache found video id for {0} - {1} song as {2}", song.Artist, song.Title, song.VideoId);
+                }
+                else
+                {
+                    var searchListRequest = youTubeService.Search.List("snippet");
+                    searchListRequest.Q = song.Keyword;
+                    searchListRequest.MaxResults = 10;
+
+                    // Call the search.list method to retrieve results matching the specified query term
+                    var searchListResponse = await searchListRequest.ExecuteAsync();
+
+                    foreach (var searchResult in searchListResponse.Items)
                     {
-                        song.VideoId = searchResult.Id.VideoId;
-                        Debug.WriteLine("Video id for {0} - {1} song is {2}", song.Artist, song.Title, song.VideoId);
-                        break;
+                        if (searchResult.Id.Kind == "youtube#video")
+                        {
+                            song.VideoId = searchResult.Id.VideoId;
+                            Debug.WriteLine("Using YouTube service found video id for {0} - {1} song as {2}", song.Artist, song.Title, song.VideoId);
+                            break;
+                        }
                     }
+
+                    // Save song to the cache
+                    songCache.Add(song.Keyword, song);
                 }
             }
+
+            // Save songs cache
+            songCache.SaveToFile(songsJsonFile);
 
             return chart;
         }

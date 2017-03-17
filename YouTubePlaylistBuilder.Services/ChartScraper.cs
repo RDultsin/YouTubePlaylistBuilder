@@ -58,12 +58,16 @@ namespace YouTubePlaylistBuilder.Services
 
             HtmlNode docTitle = doc.DocumentNode.SelectSingleNode("/html/head/title"); // Eg. Русский Чарт. Выпуск от 10.03.2017. Результаты.
             string[] chartNameAndReleaseFromDate = docTitle.InnerText.Split(_separators, System.StringSplitOptions.RemoveEmptyEntries);
-            if (chartNameAndReleaseFromDate.Length >= 4)
+            if (chartNameAndReleaseFromDate.Length == 5)
             {
-                chart.Name = chartNameAndReleaseFromDate[0].Trim().Replace("&#39;", "'");
+                chart.Name = chartNameAndReleaseFromDate[0].Trim().Replace("&#39;", "'").Replace("&amp;", "&");
                 chart.ReleaseFromDate = $"{chartNameAndReleaseFromDate[1].Trim()}.{chartNameAndReleaseFromDate[2].Trim()}.{chartNameAndReleaseFromDate[3].Trim()}";
-                Debug.WriteLine("Chart {0} ({1})", chart.Name, chart.ReleaseFromDate);
+            } else if (chartNameAndReleaseFromDate.Length == 6)
+            {
+                chart.Name = $"{chartNameAndReleaseFromDate[0].Trim().Replace("&#39;", "'").Replace("&amp;", "&")} {chartNameAndReleaseFromDate[1].Trim()}";
+                chart.ReleaseFromDate = $"{chartNameAndReleaseFromDate[2].Trim()}.{chartNameAndReleaseFromDate[3].Trim()}.{chartNameAndReleaseFromDate[4].Trim()}";
             }
+            Debug.WriteLine("Chart {0} ({1})", chart.Name, chart.ReleaseFromDate);
 
             int i = 0;
             foreach (HtmlNode div in doc.DocumentNode.SelectNodes("//div[@class='b-ovhidden']"))
@@ -73,9 +77,9 @@ namespace YouTubePlaylistBuilder.Services
                 foreach (HtmlNode child in div.ChildNodes)
                 {
                     if (child.Name == "h2" && child.GetAttributeValue("class", null) == "b-title")
-                        artist = child.InnerText;
+                        artist = child.InnerText.Replace("&#39;", "'").Replace("&amp;", "&");
                     else if (child.Name == "div" && child.GetAttributeValue("class", null) == "b-text")
-                        title = child.InnerText;
+                        title = child.InnerText.Replace("&#39;", "'").Replace("&amp;", "&");
                 }
 
                 if (!string.IsNullOrWhiteSpace(artist) & !string.IsNullOrWhiteSpace(title))

@@ -7,6 +7,7 @@ using System;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using YouTubePlaylistBuilder.Data;
@@ -60,18 +61,46 @@ namespace YouTubePlaylistBuilder.Services
                     // Call the search.list method to retrieve results matching the specified query term
                     var searchListResponse = await searchListRequest.ExecuteAsync();
 
+                    // Put candidate video ids into a comma-separated string
+                    StringBuilder videoIdsSb = null;
                     foreach (var searchResult in searchListResponse.Items)
                     {
-                        if (searchResult.Id.Kind == "youtube#video")
+                        if (searchResult.Id.Kind == "youtube#video" && !searchResult.Snippet.Title.Contains("(Audio)"))
                         {
-                            song.VideoId = searchResult.Id.VideoId;
-                            Debug.WriteLine("Using YouTube service found video id for {0} - {1} song as {2}", song.Artist, song.Title, song.VideoId);
-                            break;
+                            if (videoIdsSb == null)
+                                videoIdsSb = new StringBuilder();
+                            else
+                                videoIdsSb.Append(',');
+                            videoIdsSb.Append(searchResult.Id.VideoId);
                         }
                     }
 
-                    // Save song to the cache
-                    songCache.Add(song.Keyword, song);
+                    if (videoIdsSb != null)
+                    {
+                        string videoIds = videoIdsSb.ToString();
+
+                        // Get statistics for video candidats
+                        VideosResource.ListRequest videoResourceListRequest = youTubeService.Videos.List("statistics");
+                        videoResourceListRequest.Id = videoIds;
+                        videoResourceListRequest.MaxResults = 10;
+
+                        VideoListResponse videoListResponse = await videoResourceListRequest.ExecuteAsync();
+
+                        // Find most popular video (by view count)
+                        ulong? maxViewCount = 0;
+                        foreach (Video videoResult in videoListResponse.Items)
+                        {
+                            if (videoResult.Statistics.ViewCount > maxViewCount)
+                            {
+                                song.VideoId = videoResult.Id;
+                                maxViewCount = videoResult.Statistics.ViewCount;
+                            }
+                        }
+                        Debug.WriteLine("Using YouTube service found video id for {0} - {1} song as {2} having {3} views", song.Artist, song.Title, song.VideoId, maxViewCount);
+
+                        // Save song to the cache
+                        songCache.Add(song.Keyword, song);
+                    }
                 }
             }
 

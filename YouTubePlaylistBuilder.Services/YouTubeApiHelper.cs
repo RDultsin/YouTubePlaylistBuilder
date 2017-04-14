@@ -65,7 +65,7 @@ namespace YouTubePlaylistBuilder.Services
                     StringBuilder videoIdsSb = null;
                     foreach (var searchResult in searchListResponse.Items)
                     {
-                        if (searchResult.Id.Kind == "youtube#video" && !searchResult.Snippet.Title.Contains("(Audio)"))
+                        if (searchResult.Id.Kind == "youtube#video" && !searchResult.Snippet.Title.Contains("(Audio)") && !searchResult.Snippet.Title.Contains("[AUDIO]"))
                         {
                             if (videoIdsSb == null)
                                 videoIdsSb = new StringBuilder();
@@ -168,7 +168,7 @@ namespace YouTubePlaylistBuilder.Services
                     Snippet = new PlaylistSnippet
                     {
                         Title = chart.PlaylistName,
-                        Description = "Playlist created with the YouTube Playlist Builder https://github.com/RDultsin/YouTubePlaylistBuilder"
+                        Description = $"Source: {chart.Url}\n\nPlaylist created with the YouTube Playlist Builder https://github.com/RDultsin/YouTubePlaylistBuilder"
                     },
                     Status = new PlaylistStatus
                     {
@@ -183,7 +183,7 @@ namespace YouTubePlaylistBuilder.Services
             {
                 // Update title of playlist
                 playlist.Snippet.Title = chart.PlaylistName;
-                playlist.Snippet.Description = "Playlist updated with the YouTube Playlist Builder https://github.com/RDultsin/YouTubePlaylistBuilder";
+                playlist.Snippet.Description = $"Source: {chart.Url}\n\nPlaylist updated with the YouTube Playlist Builder https://github.com/RDultsin/YouTubePlaylistBuilder";
                 playlist = await youTubeService.Playlists.Update(playlist, "snippet").ExecuteAsync();
 
                 Debug.WriteLine("Updated playlist {0}", (object)playlist.Snippet.Title);

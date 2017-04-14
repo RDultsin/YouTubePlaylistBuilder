@@ -50,9 +50,9 @@ namespace YouTubePlaylistBuilder.Services
         /// <returns>Chart populated with name, release from date and list of songs</returns>
         private Chart GetChartNameReleaseFromDateAndSongs(string domain, string chartLink)
         {
-            Chart chart = new Chart { Link = chartLink, Songs = new List<Song>() };
+            Chart chart = new Chart { Domain = domain, Link = chartLink, Songs = new List<Song>() };
 
-            HtmlDocument doc = _htmlWeb.Load(domain + chartLink);
+            HtmlDocument doc = _htmlWeb.Load(chart.Url);
             if (doc == null)
                 return chart;
 

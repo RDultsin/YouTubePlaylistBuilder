@@ -4,6 +4,7 @@ using Google.Apis.Util.Store;
 using Google.Apis.YouTube.v3;
 using Google.Apis.YouTube.v3.Data;
 using System;
+using System.Collections.Generic;
 using System.Configuration;
 using System.Diagnostics;
 using System.IO;
@@ -17,15 +18,23 @@ namespace YouTubePlaylistBuilder.Services
     public class YouTubeApiHelper
     {
         private const string YouTubeApiKeyConfigKey = "YouTubeApiKey";
-        private const string SongsJsonFileConfigKey = "SongsJsonFile";
+
+        private static readonly List<string> IgnoreList = new List<string>
+        {
+            "(Audio)",
+            "[AUDIO]",
+            "(ШУРЫГИНА ПАРОДИЯ)",
+            "лирик-видео",
+            "(official lyric video)",
+            "(Lyric Video)",
+        };
 
         public async Task<Chart> GetYouTubeVideoIds(Chart chart)
         {
-            string youTubeApiKey, songsJsonFile;
+            string youTubeApiKey;
             try
             {
                 youTubeApiKey = ConfigurationManager.AppSettings[YouTubeApiKeyConfigKey];
-                songsJsonFile = ConfigurationManager.AppSettings[SongsJsonFileConfigKey];
             }
             catch (ConfigurationErrorsException e)
             {
@@ -40,72 +49,65 @@ namespace YouTubePlaylistBuilder.Services
                 ApplicationName = GetType().ToString(),
             });
 
-            // Load songs cache
-            SongCache songCache = new SongCache(songsJsonFile);
-
             foreach (Song song in chart.Songs)
             {
-                // Attempt to retrive song from the cache first
-                Song cachedSong;
-                if (songCache.TryGetValue(song.Keyword, out cachedSong))
+                var searchListRequest = youTubeService.Search.List("snippet");
+                searchListRequest.Q = song.Keyword;
+                searchListRequest.MaxResults = 10;
+
+                // Call the search.list method to retrieve results matching the specified query term
+                var searchListResponse = await searchListRequest.ExecuteAsync();
+
+                // Put candidate video ids into a comma-separated string
+                StringBuilder videoIdsSb = null;
+                foreach (var searchResult in searchListResponse.Items)
                 {
-                    song.VideoId = cachedSong.VideoId;
-                    Debug.WriteLine("Using songs cache found video id for {0} - {1} song as {2}", song.Artist, song.Title, song.VideoId);
+                    if (searchResult.Id.Kind != "youtube#video")
+                        break;
+
+                    bool ignore = false;
+                    foreach (string ignoreItem in IgnoreList)
+                    {
+                        if (searchResult.Snippet.Title.Contains(ignoreItem))
+                        {
+                            ignore = true;
+                            break;
+                        }
+                    }
+                    if (ignore)
+                        break;
+
+                    if (videoIdsSb == null)
+                        videoIdsSb = new StringBuilder();
+                    else
+                        videoIdsSb.Append(',');
+                    videoIdsSb.Append(searchResult.Id.VideoId);
                 }
-                else
+
+                if (videoIdsSb != null)
                 {
-                    var searchListRequest = youTubeService.Search.List("snippet");
-                    searchListRequest.Q = song.Keyword;
-                    searchListRequest.MaxResults = 10;
+                    string videoIds = videoIdsSb.ToString();
 
-                    // Call the search.list method to retrieve results matching the specified query term
-                    var searchListResponse = await searchListRequest.ExecuteAsync();
+                    // Get statistics for video candidats
+                    VideosResource.ListRequest videoResourceListRequest = youTubeService.Videos.List("statistics");
+                    videoResourceListRequest.Id = videoIds;
+                    videoResourceListRequest.MaxResults = 10;
 
-                    // Put candidate video ids into a comma-separated string
-                    StringBuilder videoIdsSb = null;
-                    foreach (var searchResult in searchListResponse.Items)
+                    VideoListResponse videoListResponse = await videoResourceListRequest.ExecuteAsync();
+
+                    // Find most popular video (by view count)
+                    ulong? maxViewCount = 0;
+                    foreach (Video videoResult in videoListResponse.Items)
                     {
-                        if (searchResult.Id.Kind == "youtube#video" && !searchResult.Snippet.Title.Contains("(Audio)") && !searchResult.Snippet.Title.Contains("[AUDIO]"))
+                        if (videoResult.Statistics.ViewCount > maxViewCount)
                         {
-                            if (videoIdsSb == null)
-                                videoIdsSb = new StringBuilder();
-                            else
-                                videoIdsSb.Append(',');
-                            videoIdsSb.Append(searchResult.Id.VideoId);
+                            song.VideoId = videoResult.Id;
+                            maxViewCount = videoResult.Statistics.ViewCount;
                         }
                     }
-
-                    if (videoIdsSb != null)
-                    {
-                        string videoIds = videoIdsSb.ToString();
-
-                        // Get statistics for video candidats
-                        VideosResource.ListRequest videoResourceListRequest = youTubeService.Videos.List("statistics");
-                        videoResourceListRequest.Id = videoIds;
-                        videoResourceListRequest.MaxResults = 10;
-
-                        VideoListResponse videoListResponse = await videoResourceListRequest.ExecuteAsync();
-
-                        // Find most popular video (by view count)
-                        ulong? maxViewCount = 0;
-                        foreach (Video videoResult in videoListResponse.Items)
-                        {
-                            if (videoResult.Statistics.ViewCount > maxViewCount)
-                            {
-                                song.VideoId = videoResult.Id;
-                                maxViewCount = videoResult.Statistics.ViewCount;
-                            }
-                        }
-                        Debug.WriteLine("Using YouTube service found video id for {0} - {1} song as {2} having {3} views", song.Artist, song.Title, song.VideoId, maxViewCount);
-
-                        // Save song to the cache
-                        songCache.Add(song.Keyword, song);
-                    }
+                    Debug.WriteLine("Using YouTube service found video id for {0} - {1} song as {2} having {3} views", song.Artist, song.Title, song.VideoId, maxViewCount);
                 }
             }
-
-            // Save songs cache
-            songCache.SaveToFile(songsJsonFile);
 
             return chart;
         }

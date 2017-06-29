@@ -22,11 +22,12 @@ namespace YouTubePlaylistBuilder.Services
         private static readonly List<string> IgnoreList = new List<string>
         {
             "(Audio)",
+            "(Lyric Video)",
+            "(Official Lyric Video)",
+            "(official lyric video)",
             "[AUDIO]",
             "(ШУРЫГИНА ПАРОДИЯ)",
             "лирик-видео",
-            "(official lyric video)",
-            "(Lyric Video)",
         };
 
         public async Task<Chart> GetYouTubeVideoIds(Chart chart)

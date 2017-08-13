@@ -23,6 +23,7 @@ namespace YouTubePlaylistBuilder.Services
         {
             "(Audio)",
             "(Lyric Video)",
+            "(Official Audio",
             "(Official Lyric Video)",
             "(official lyric video)",
             "[AUDIO]",
@@ -64,7 +65,7 @@ namespace YouTubePlaylistBuilder.Services
                 foreach (var searchResult in searchListResponse.Items)
                 {
                     if (searchResult.Id.Kind != "youtube#video")
-                        break;
+                        continue;
 
                     bool ignore = false;
                     foreach (string ignoreItem in IgnoreList)
@@ -76,7 +77,7 @@ namespace YouTubePlaylistBuilder.Services
                         }
                     }
                     if (ignore)
-                        break;
+                        continue;
 
                     if (videoIdsSb == null)
                         videoIdsSb = new StringBuilder();
